@@ -4,7 +4,7 @@
 
 ### package.json
 
-`package init`
+`pnpm init`
 
 * rollup: 构建工具rollup相关依赖
 * tslib: 辅助ts的依赖
@@ -25,3 +25,12 @@ typescript的配置
 ### rollup.config.ts
 
 rollup的相关配置项
+
+## 二、packages
+
+* reactivity 响应式系统
+* share 仓库中中多个包之间共享的工具或功能模块
+
+### reactivity
+
+* 

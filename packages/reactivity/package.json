@@ -1,0 +1,11 @@
+{
+  "name": "@iana-vue/reactivity",
+  "version": "1.0.0",
+  "description": "@iana-vue/reactivity",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "Ianarua",
+  "license": "ISC"
+}
