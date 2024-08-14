@@ -1,7 +1,7 @@
 {
-  "name": "@iana-vue/reactivity",
+  "name": "@iana-vue/shared",
   "version": "1.0.0",
-  "description": "@iana-vue/reactivity",
+  "description": "@iana-vue/shared",
   "main": "index.ts",
   "scripts": {
     "test": "jest"
