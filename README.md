@@ -73,7 +73,7 @@ const proxy = new Proxy(target, {
     return Reflect.set(target, key, value, receiver);
   },
 });
-proxy.alias
+proxy.alias;
 ```
 #### 2. 依赖收集
 

@@ -1,7 +1,11 @@
 // 当前收集的依赖(函数)
+import { extend } from '@mini-vue/shared';
+
 let activeEffect = void 0;
 // 是否可以开始收集依赖
 let shouldTrack = false;
+// 依赖的map
+const targetMap = new WeakMap();
 
 // 依赖收集
 export class ReactiveEffect {
@@ -55,4 +59,65 @@ export class ReactiveEffect {
       this.active = false;
     }
   }
+}
+
+
+// 清除依赖
+function cleanupEffect(effect) {
+  // 找到所有依赖这个 effect 的响应式对象
+  // 从这些响应式对象里把这个 effect 删掉
+  effect.deps.forEach(dep => dep.delete(effect));
+
+  effect.deps.length = 0;
+}
+
+export function effect(fn, options = {}) {
+  const _effect = new ReactiveEffect(fn);
+
+  // 把用户传过来的值合并到 _effect 对象上去
+  // extend = Object.assign
+  extend(_effect, options);
+  _effect.run();
+
+  // 把 _effect.run 方法返回
+  // 让用户自行选择调用 fn 的时机
+  const runner: any = _effect.run.bind(_effect);
+  runner.effect = _effect;
+  return runner;
+}
+
+export function stop(runner) {
+  runner.effect.stop();
+}
+
+export function track(target, type, key) {
+  if (!isTracking()) {
+    return;
+  }
+  console.log(`触发 track -> target: ${ target } type:${ type } key:${ key }`);
+  // 1. 先基于 target 找到对应的 dep
+  // 第一次，就需要初始化
+  let depsMap = targetMap.get(target);
+  if (!depsMap) {
+    // 初始化 depsMap 的逻辑
+    depsMap = new Map();
+    targetMap.set(target, depsMap);
+  }
+
+  // 获取依赖weakMap
+  let dep = depsMap.get(key);
+
+  if (!dep) {
+    dep = createDep();
+    depsMap.set(key, dep);
+  }
+
+  trackEffects(dep);
+}
+
+export function trackEffects () {}
+
+
+export function isTracking() {
+  return shouldTrack && activeEffect !== undefined;
 }
