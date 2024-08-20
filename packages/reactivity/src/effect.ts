@@ -80,6 +80,11 @@ function cleanupEffect(effect) {
   effect.deps.length = 0;
 }
 
+/**
+ * @description 用来收集副作用函数
+ * @param fn 副作用函数
+ * @param options 选项
+ */
 export function effect(fn, options = {}) {
   const _effect = new ReactiveEffect(fn);
 
