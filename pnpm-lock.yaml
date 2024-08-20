@@ -25,7 +25,7 @@ importers:
         version: 2.79.1
       rollup-plugin-sourcemaps:
         specifier: ^0.6.2
-        version: 0.6.3(@types/node@22.1.0)(rollup@2.79.1)
+        version: 0.6.3(@types/node@22.4.1)(rollup@2.79.1)
       tslib:
         specifier: ^2.3.1
         version: 2.6.3
@@ -35,6 +35,14 @@ importers:
       vitest:
         specifier: ^0.22.1
         version: 0.22.1
+
+  packages/reactivity:
+    dependencies:
+      '@iana-vue/shared':
+        specifier: workspace:^1.0.0
+        version: link:../shared
+
+  packages/shared: {}
 
 packages:
 
@@ -96,8 +104,8 @@ packages:
   '@types/estree@1.0.5':
     resolution: {integrity: sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==}
 
-  '@types/node@22.1.0':
-    resolution: {integrity: sha512-AOmuRF0R2/5j1knA3c6G3HOk523Ga+l+ZXltX8SF1+5oqcXijjfTd8fY3XRZqSihEu9XhtQnKYLmkFaoxgsJHw==}
+  '@types/node@22.4.1':
+    resolution: {integrity: sha512-1tbpb9325+gPnKK0dMm+/LMriX0vKxf6RnB0SZUqfyVkQ4fMgUSySqhxE/y8Jvs4NyF1yHzTfG9KlnkIODxPKg==}
 
   '@types/resolve@1.17.1':
     resolution: {integrity: sha512-yy7HuzQhj0dhGpD8RLXSZWEkLsV9ibvxvi6EiJ3bkqLAO1RGo0WbkWQiwpRlSFymTJRz0d3k5LM3kkx8ArDbLw==}
@@ -424,8 +432,8 @@ packages:
     engines: {node: '>=4.2.0'}
     hasBin: true
 
-  undici-types@6.13.0:
-    resolution: {integrity: sha512-xtFJHudx8S2DSoujjMd1WeWvn7KKWFRESZTMeL1RptAYERu29D6jphMjjY+vn96jvN3kVPDNxU/E13VTaXj6jg==}
+  undici-types@6.19.8:
+    resolution: {integrity: sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw==}
 
   vite@3.2.10:
     resolution: {integrity: sha512-Dx3olBo/ODNiMVk/cA5Yft9Ws+snLOXrhLtrI3F4XLt4syz2Yg8fayZMWScPKoz12v5BUv7VEmQHnsfpY80fYw==}
@@ -539,13 +547,13 @@ snapshots:
 
   '@types/estree@1.0.5': {}
 
-  '@types/node@22.1.0':
+  '@types/node@22.4.1':
     dependencies:
-      undici-types: 6.13.0
+      undici-types: 6.19.8
 
   '@types/resolve@1.17.1':
     dependencies:
-      '@types/node': 22.1.0
+      '@types/node': 22.4.1
 
   assertion-error@1.1.0: {}
 
@@ -762,13 +770,13 @@ snapshots:
       path-parse: 1.0.7
       supports-preserve-symlinks-flag: 1.0.0
 
-  rollup-plugin-sourcemaps@0.6.3(@types/node@22.1.0)(rollup@2.79.1):
+  rollup-plugin-sourcemaps@0.6.3(@types/node@22.4.1)(rollup@2.79.1):
     dependencies:
       '@rollup/pluginutils': 3.1.0(rollup@2.79.1)
       rollup: 2.79.1
       source-map-resolve: 0.6.0
     optionalDependencies:
-      '@types/node': 22.1.0
+      '@types/node': 22.4.1
 
   rollup@2.79.1:
     optionalDependencies:
@@ -795,29 +803,29 @@ snapshots:
 
   typescript@4.9.5: {}
 
-  undici-types@6.13.0: {}
+  undici-types@6.19.8: {}
 
-  vite@3.2.10(@types/node@22.1.0):
+  vite@3.2.10(@types/node@22.4.1):
     dependencies:
       esbuild: 0.15.18
       postcss: 8.4.41
       resolve: 1.22.8
       rollup: 2.79.1
     optionalDependencies:
-      '@types/node': 22.1.0
+      '@types/node': 22.4.1
       fsevents: 2.3.3
 
   vitest@0.22.1:
     dependencies:
       '@types/chai': 4.3.17
       '@types/chai-subset': 1.3.5
-      '@types/node': 22.1.0
+      '@types/node': 22.4.1
       chai: 4.5.0
       debug: 4.3.6
       local-pkg: 0.4.3
       tinypool: 0.2.4
       tinyspy: 1.1.1
-      vite: 3.2.10(@types/node@22.1.0)
+      vite: 3.2.10(@types/node@22.4.1)
     transitivePeerDependencies:
       - less
       - sass

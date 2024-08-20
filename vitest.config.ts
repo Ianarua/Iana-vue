@@ -7,10 +7,10 @@ export default defineConfig({
     globals: true,
   },
   resolve: {
-    // 引入别名，将@mini-vue后面
+    // 引入别名，将@iana-vue后面的提取并放到下面
     alias: [
       {
-        find: /@mini-vue\/([\w-]*)/,
+        find: /@iana-vue\/([\w-]*)/,
         replacement: path.resolve(__dirname, "packages") + "/$1/src",
       },
     ],

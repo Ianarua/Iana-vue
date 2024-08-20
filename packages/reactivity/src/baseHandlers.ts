@@ -1,5 +1,6 @@
 import { ReactiveFlags, reactiveMap, readonlyMap, shallowReadonlyMap } from './reactive';
-import { isObject } from '@mini-vue/shared';
+import { isObject } from '@iana-vue/shared';
+import { track, trigger } from './effect';
 
 const get = createGetter();
 const set = createSetter();
@@ -31,12 +32,13 @@ function createGetter(isReadonly = false, shallow = false) {
 
     // key是原始对象，添加响应式
     // 使用Reflect的好处是可以调整this指向
+    // 这里是res = target[key]
     const res = Reflect.get(target, key, receiver);
 
     // readonly不需要做依赖收集(只读)
     if (isReadonly) {
       // 在触发 get 的时候进行依赖收集
-      track(target, 'get', key);
+      track(target, key);
     }
 
     // 浅响应式
@@ -47,9 +49,9 @@ function createGetter(isReadonly = false, shallow = false) {
     // 把内部所有的是 object 的值都用 reactive 包裹，变成响应式对象
     // 如果说这个 res 值是一个对象的话，那么我们需要把获取到的 res 也转换成 reactive
     // res 等于 target[key]
-    if (isObject(res)) {
-      return isReadonly ? readonly(res) : reactive(res);
-    }
+    // if (isObject(res)) {
+    //   return isReadonly ? readonly(res) : reactive(res);
+    // }
 
     return res;
   };
@@ -60,7 +62,7 @@ function createSetter() {
     const res = Reflect.set(target, key, value, receiver);
 
     // 触发 set 的时候 使用副作用函数
-    trigger(target, 'set', key);
+    trigger(target, key);
 
     return res;
 

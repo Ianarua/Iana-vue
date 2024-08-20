@@ -22,13 +22,13 @@ export default {
   output: [
     {
       format: "cjs",
-      file: "./packages/vue/dist/mini-vue.cjs.js",
+      file: "./packages/vue/dist/iana-vue.cjs.js",
       sourcemap: true,
     },
     {
       name: "vue",
       format: "es",
-      file: "./packages/vue/dist/mini-vue.esm-bundler.js",
+      file: "./packages/vue/dist/iana-vue.esm-bundler.js",
       sourcemap: true,
     },
   ],

@@ -26,6 +26,10 @@ typescript的配置
 
 rollup的相关配置项
 
+### pnpm-workspace.yaml
+
+pnpm不支持在package.json中配置的workspace字段, 需要新建名为这个的文件进行配置
+
 ## 二、packages
 
 * reactivity 响应式系统
@@ -46,6 +50,12 @@ rollup的相关配置项
     * getter
         * 首先需要判断是不是特殊情况访问
         * 如果是正常情况，需要搭配Reflect来进行对象操作
+        * 之后进行依赖收集`track`
+        * 判断是否还是为对象，递归调用
+        * 不是对象了，就return
+    * setter
+        * 仍然用Reflect作为访问对象的容器
+        * `trigger`触发副作用函数
 
 > Reflect的好处:
 > 1. Reflect和Proxy可以配套使用
@@ -75,7 +85,7 @@ const proxy = new Proxy(target, {
 });
 proxy.alias;
 ```
-#### 2. 依赖收集
+#### 2. 依赖收集`track`
 
 * effect.ts
 * 

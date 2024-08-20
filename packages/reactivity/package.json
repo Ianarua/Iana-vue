@@ -4,8 +4,11 @@
   "description": "@iana-vue/reactivity",
   "main": "index.ts",
   "scripts": {
-    "test": "jest"
+    "test": "vitest"
   },
   "author": "Ianarua",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@iana-vue/shared": "workspace:^1.0.0"
+  }
 }

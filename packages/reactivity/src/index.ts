@@ -1,1 +1,1 @@
-
+export { effect } from './effect';

@@ -1,16 +1,25 @@
-// 当前收集的依赖(函数)
-import { extend } from '@mini-vue/shared';
+import { extend } from '@iana-vue/shared';
+import { createDep } from './dep';
 
-let activeEffect = void 0;
+// 当前正在收集的依赖
+let activeEffect: ReactiveEffect | undefined = void 0;
 // 是否可以开始收集依赖
 let shouldTrack = false;
 // 依赖的map
 const targetMap = new WeakMap();
 
+/**
+ * targetMap
+ * |       |
+ * target  depsMap
+ *         |    |
+ *         key  depsSet
+ */
+
 // 依赖收集
 export class ReactiveEffect {
   private active = true;
-  public deps = [];
+  public deps: Array<any> = [];
   public onStop?: () => void;
   public fn: any;
   public scheduler?: any;
@@ -90,13 +99,18 @@ export function stop(runner) {
   runner.effect.stop();
 }
 
-export function track(target, type, key) {
+/**
+ * @description 创建依赖收集的结构, 在getter里面用
+ * @param target 目标对象(原对象)
+ * @param key 被访问的属性名
+ */
+export function track(target, key) {
   if (!isTracking()) {
     return;
   }
-  console.log(`触发 track -> target: ${ target } type:${ type } key:${ key }`);
-  // 1. 先基于 target 找到对应的 dep
-  // 第一次，就需要初始化
+  console.log(`触发 track -> target: ${ target } key:${ key }`);
+  // 先基于 target 找到对应的 depsMap
+  // 如果是第一次，就需要初始化
   let depsMap = targetMap.get(target);
   if (!depsMap) {
     // 初始化 depsMap 的逻辑
@@ -104,19 +118,78 @@ export function track(target, type, key) {
     targetMap.set(target, depsMap);
   }
 
-  // 获取依赖weakMap
-  let dep = depsMap.get(key);
+  // 获取依赖集(Set)
+  let depsSet = depsMap.get(key);
 
-  if (!dep) {
-    dep = createDep();
-    depsMap.set(key, dep);
+  if (!depsSet) {
+    depsSet = createDep();
+    depsMap.set(key, depsSet);
   }
 
-  trackEffects(dep);
+  trackEffects(depsSet);
 }
 
-export function trackEffects () {}
+/**
+ * @description 依赖收集，将 依赖(fn) 存入 dep(depsSet) 中
+ * @param depsSet {Set} 收集依赖的容器
+ */
+export function trackEffects(depsSet: Set<any>) {
+  // 这里是一个优化点
+  // 先看看这个依赖是不是已经收集了，
+  // 已经收集的话，那么就不需要在收集一次了
+  // 可能会影响 code path change 的情况
+  // 需要每次都 cleanupEffect
+  // shouldTrack = !dep.has(activeEffect!);
+  if (!depsSet.has(activeEffect)) {
+    depsSet.add(activeEffect);
+    activeEffect!.deps.push(depsSet);
+  }
+}
 
+/**
+ * @description 创建触发依赖的结构
+ * @param target 目标对象(原对象)
+ * @param key 被访问的属性名
+ */
+export function trigger(target, key) {
+  // 先收集所有的 depsSet 放到 deps 里面
+  let deps: Array<any> = [];
+  const depsMap = targetMap.get(target);
+
+  if (!depsMap) return;
+
+  // 取出 depsSet
+  const depsSet = depsMap.get(key);
+
+  // 放入 deps 里面
+  deps.push(depsSet);
+
+  const effects: Array<any> = [];
+  deps.forEach(depsSet => {
+    // 这里解构 depsSet 得到的是 depsSet 内部存储的 effect
+    effects.push(...depsSet);
+  });
+
+  triggerEffects(createDep(effects));
+}
+
+/**
+ * @description 触发依赖
+ * @param depsSet {Set} 该属性相关的所有依赖集
+ */
+export function triggerEffects(depsSet: Set<any>) {
+  // 执行依赖
+  for (const effect of depsSet) {
+    if (effect.scheduler) {
+      // scheduler 可以让用户自己选择调用的时机
+      // 这样就可以灵活的控制调用了
+      // 在 runtime-core 中，就是使用了 scheduler 实现了在 next ticker 中调用的逻辑
+      effect.scheduler();
+    } else {
+      effect.run();
+    }
+  }
+}
 
 export function isTracking() {
   return shouldTrack && activeEffect !== undefined;
