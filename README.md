@@ -11,6 +11,18 @@
 * effect.scheduler
 * effect.stop
 
+- [Monorepo组织管理构建](#一monorepo组织管理构建)
+  - [package.json说明](#packagejson)
+  - [tsconfig.json说明](#tsconfigjson)
+  - [rollup.config.ts说明](#rollupconfigts)
+  - [pnpm-workspace.yaml说明](#pnpm-workspaceyaml)
+- [packages包](#二packages)
+  - [reactivity](#reactivity)
+    - [1. reactive的响应式系统整个流程](#1-reactive的响应式系统整个流程)
+    - [2. 创建reactive Proxy步骤](#2-创建reactive-proxy步骤)
+    - [3. track依赖收集](#3-track依赖收集)
+    - [4. trigger依赖触发](#4-trigger依赖触发)
+
 ## 一、Monorepo组织管理构建
 
 ### package.json
