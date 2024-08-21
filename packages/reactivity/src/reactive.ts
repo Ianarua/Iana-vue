@@ -1,4 +1,4 @@
-import { mutableHandlers } from './baseHandlers';
+import { mutableHandlers, readonlyHandlers } from './baseHandlers';
 
 // 定义一个枚举 ReactiveFlags，包含用于标识 reactive 对象的属性键
 export const enum ReactiveFlags {
@@ -11,8 +11,6 @@ export const enum ReactiveFlags {
 export const reactiveMap = new WeakMap();
 // 声明并初始化 readonly 对象的 WeakMap 缓存，用于存储只读代理
 export const readonlyMap = new WeakMap();
-// 声明并初始化 shallowReadonly 对象的 WeakMap 缓存，用于存储浅只读代理
-export const shallowReadonlyMap = new WeakMap();
 
 /**
  * @param target 需要被转换为响应式的对象
@@ -20,6 +18,10 @@ export const shallowReadonlyMap = new WeakMap();
  */
 export function reactive(target) {
   return createReactiveObject(target, reactiveMap, mutableHandlers);
+}
+
+export function readonly(target) {
+  return createReactiveObject(target, readonlyMap, readonlyHandlers);
 }
 
 /**

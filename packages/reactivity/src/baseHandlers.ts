@@ -1,9 +1,10 @@
-import { ReactiveFlags, reactiveMap, readonlyMap, shallowReadonlyMap } from './reactive';
+import { reactive, ReactiveFlags, reactiveMap, readonly, readonlyMap } from './reactive';
 import { isObject } from '@iana-vue/shared';
 import { track, trigger } from './effect';
 
 const get = createGetter();
 const set = createSetter();
+const readonlyGet = createGetter(true);
 
 function createGetter(isReadonly = false, shallow = false) {
   /**
@@ -17,15 +18,13 @@ function createGetter(isReadonly = false, shallow = false) {
       key === ReactiveFlags.RAW && receiver === reactiveMap.get(target);
     const isExistInReadonlyMap = () =>
       key === ReactiveFlags.RAW && receiver === readonlyMap.get(target);
-    const isExistInShallowReadonlyMap = () =>
-      key === ReactiveFlags.RAW && receiver === shallowReadonlyMap.get(target);
 
     // 如果key已经是响应式/只读，直接返回true/false
     if (key === ReactiveFlags.IS_REACTIVE) {
       return !isReadonly;
     } else if (key === ReactiveFlags.IS_READONLY) {
       return isReadonly;
-    } else if (isExistInReactiveMap() || isExistInReadonlyMap() || isExistInShallowReadonlyMap()) {
+    } else if (isExistInReactiveMap() || isExistInReadonlyMap()) {
       // 使用特殊情况访问，返回原始对象
       return target;
     }
@@ -36,7 +35,7 @@ function createGetter(isReadonly = false, shallow = false) {
     const res = Reflect.get(target, key, receiver);
 
     // readonly不需要做依赖收集(只读)
-    if (isReadonly) {
+    if (!isReadonly) {
       // 在触发 get 的时候进行依赖收集
       track(target, key);
     }
@@ -46,12 +45,13 @@ function createGetter(isReadonly = false, shallow = false) {
       return res;
     }
 
+    // 支持嵌套
     // 把内部所有的是 object 的值都用 reactive 包裹，变成响应式对象
     // 如果说这个 res 值是一个对象的话，那么我们需要把获取到的 res 也转换成 reactive
     // res 等于 target[key]
-    // if (isObject(res)) {
-    //   return isReadonly ? readonly(res) : reactive(res);
-    // }
+    if (isObject(res)) {
+      return isReadonly ? readonly(res) : reactive(res);
+    }
 
     return res;
   };
@@ -72,4 +72,16 @@ function createSetter() {
 export const mutableHandlers = {
   get,
   set,
+};
+
+export const readonlyHandlers = {
+  get: readonlyGet,
+  set(target, key) {
+    // readonly 的响应式对象不可以修改值
+    console.warn(
+      `Set operation on key "${String(key)}" failed: target is readonly.`,
+      target
+    );
+    return true;
+  },
 };
