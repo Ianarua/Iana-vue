@@ -6,3 +6,8 @@ export {
   isReadonly,
   isProxy,
 } from './reactive';
+export {
+  ref,
+  unRef,
+  isRef
+} from './ref'

@@ -160,3 +160,9 @@ key depsSet -> key对应所用到的副作用函数集合
 1. 从 targetMap 中获取 depsMap, 如果没有就直接return, 证明这个依赖当时判断不需要收集
 2. 通过 depsMap 拿到 depsSet, 之后传给`triggerEffects`进行触发依赖. (中途的代码是为了让看的时候逻辑更加分离)
 3. **执行副作用函数**, 遍历 depsSet 如果有`调度器scheduler`, 就执行 `effect.scheduler()`, 否则就执行`effect.run()`
+
+### ref
+
+#### 1. ref的整个流程
+
+1. 
