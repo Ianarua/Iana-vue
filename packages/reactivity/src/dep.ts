@@ -1,5 +1,8 @@
-// 存储所有的 effect 对象
-export function createDep <T>(effects?) {
-  const depSet: Set<T> =  new Set(effects);
+import { ReactiveEffect } from './effect';
+
+export type Dep = Set<ReactiveEffect>
+
+export function createDep(effects?: ReactiveEffect[]): Dep {
+  const depSet = new Set(effects);
   return depSet;
 }

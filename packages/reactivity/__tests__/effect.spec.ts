@@ -13,11 +13,11 @@ describe('effect', () => {
 
   it('监听副作用函数是否在响应式系统中正常运行', () => {
     let dummy;
-    const counter = reactive({number: 0});
+    const counter = reactive({ num: 0 });
     effect(() => (dummy = counter.num));
 
     expect(dummy).toBe(0);
     counter.num = 7;
     expect(dummy).toBe(7);
-  })
+  });
 });

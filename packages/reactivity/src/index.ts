@@ -1,4 +1,5 @@
 export { effect, stop, ReactiveEffect } from './effect';
+
 export {
   reactive,
   readonly,
@@ -6,8 +7,11 @@ export {
   isReadonly,
   isProxy,
 } from './reactive';
+
 export {
   ref,
   unRef,
-  isRef
-} from './ref'
+  isRef,
+} from './ref';
+
+export { computed } from './computed';

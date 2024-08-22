@@ -1,7 +1,8 @@
-import { createDep } from './dep';
+import { createDep, Dep } from './dep';
 import { hasChanged, isObject } from '@iana-vue/shared';
 import { reactive } from './reactive';
 import { isTracking, ReactiveEffect, trackEffects, triggerEffects } from './effect';
+import { ComputedRefImpl } from './computed';
 
 export class RefImpl<T> {
   // 原始值, 即用户设置的值
@@ -17,7 +18,7 @@ export class RefImpl<T> {
     this._rawValue = value;
     // 先检查 value 是否是一个对象, 是一个对象就需要用 reactive 包裹
     this._value = convert(value);
-    this.dep = createDep<ReactiveEffect>();
+    this.dep = createDep();
   }
 
   get value() {
@@ -40,6 +41,11 @@ export class RefImpl<T> {
 }
 
 export type Ref<T> = InstanceType<typeof RefImpl<T>>;
+
+type RefBase<T> = {
+  dep: Dep
+  value: T
+}
 
 /**
  * @description 创建并返回一个 ref 实例，用于包装给定的值。
@@ -73,13 +79,13 @@ function createRef<T>(value: T) {
   return refImpl;
 }
 
-export function trackRefValue(ref: Ref<any>) {
+export function trackRefValue(ref: RefBase<any>) {
   if (isTracking()) {
     trackEffects(ref.dep);
   }
 }
 
-export function triggerRefValue(ref: Ref<any>) {
+export function triggerRefValue(ref: RefBase<any>) {
   triggerEffects(ref.dep);
 }
 
@@ -93,6 +99,7 @@ export function triggerRefValue(ref: Ref<any>) {
 // }
 
 export type MaybeRef<T = any> = T | Ref<T>
+
 /**
  * @description 如果参数是 ref，则返回内部值，否则返回参数本身
  * 这是 val = isRef(val) ? val.value : val 计算的一个语法糖

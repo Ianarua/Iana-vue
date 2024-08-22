@@ -12,12 +12,24 @@
     "preserveConstEnums": true,
     "sourceMap": true,
     "downlevelIteration": true,
-    "lib": ["esnext", "DOM"],
-    "types": ["vitest/globals"],
+    "lib": [
+      "esnext",
+      "DOM"
+    ],
+    "types": [
+      "vitest/globals"
+    ],
     "paths": {
-      "@iana-vue/*": ["packages/*/src"]
+      "@iana-vue/*": [
+        "packages/*/src"
+      ]
     }
   },
-  "include": ["packages/*/src", "packages/*/__tests__"],
-  "exclude": ["node_modules"]
+  "include": [
+    "packages/*/src",
+    "packages/*/__tests__"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

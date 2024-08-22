@@ -1,5 +1,5 @@
 import { extend } from '@iana-vue/shared';
-import { createDep } from './dep';
+import { createDep, type Dep } from './dep';
 
 // 当前正在收集的依赖
 let activeEffect: ReactiveEffect | undefined = void 0;
@@ -17,14 +17,16 @@ const targetMap = new WeakMap();
  */
 
 // 依赖收集
-export class ReactiveEffect {
+export class ReactiveEffect<T = any> {
   private active = true;
   public deps: Array<any> = [];
   public onStop?: () => void;
-  public fn: any;
-  public scheduler?: any;
 
-  constructor(fn, scheduler?) {
+  /**
+   * @param fn 副作用函数
+   * @param scheduler 调度器(computed会用到)
+   */
+  constructor(public fn: () => T, public scheduler?: EffectScheduler) {
     this.fn = fn;
     this.scheduler = scheduler;
     console.log('创建 ReactiveEffect 对象');
@@ -46,7 +48,7 @@ export class ReactiveEffect {
 
     // 执行的时候给全局 activeEffect 赋值
     // 利用全局属性来获取当前的 effect
-    activeEffect = this as any;
+    activeEffect = this;
     // 执行用户传入的 fn
     console.log('执行用户传入的 fn');
     const res = this.fn();
@@ -148,7 +150,7 @@ export function track(target, key) {
  * @description 依赖收集，将 依赖(fn) 存入 dep(depsSet) 中
  * @param depsSet {Set} 收集依赖的容器
  */
-export function trackEffects(depsSet: Set<ReactiveEffect>) {
+export function trackEffects(depsSet: Dep) {
   // 这里是一个优化点
   // 先看看这个依赖是不是已经收集了，
   // 已经收集的话，那么就不需要在收集一次了
@@ -192,7 +194,7 @@ export function trigger(target, key) {
  * @description 触发依赖
  * @param depsSet {Set} 该属性相关的所有依赖集
  */
-export function triggerEffects(depsSet: Set<ReactiveEffect>) {
+export function triggerEffects(depsSet: Dep) {
   // 执行依赖
   for (const effect of depsSet) {
     if (effect.scheduler) {
