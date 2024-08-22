@@ -80,12 +80,22 @@ function cleanupEffect(effect) {
   effect.deps.length = 0;
 }
 
+export type EffectScheduler = (...args: any[]) => any
+
+export interface ReactiveEffectOptions {
+  lazy?: boolean;
+  scheduler?: EffectScheduler;
+  scope?: any;
+  allowRecurse?: boolean;
+  onStop?: () => void;
+}
+
 /**
  * @description 用来收集副作用函数
  * @param fn 副作用函数
  * @param options 选项
  */
-export function effect(fn, options = {}) {
+export function effect(fn, options: ReactiveEffectOptions = {}) {
   const _effect = new ReactiveEffect(fn);
 
   // 把用户传过来的值合并到 _effect 对象上去
@@ -138,15 +148,15 @@ export function track(target, key) {
  * @description 依赖收集，将 依赖(fn) 存入 dep(depsSet) 中
  * @param depsSet {Set} 收集依赖的容器
  */
-export function trackEffects(depsSet: Set<any>) {
+export function trackEffects(depsSet: Set<ReactiveEffect>) {
   // 这里是一个优化点
   // 先看看这个依赖是不是已经收集了，
   // 已经收集的话，那么就不需要在收集一次了
   // 可能会影响 code path change 的情况
   // 需要每次都 cleanupEffect
   // shouldTrack = !dep.has(activeEffect!);
-  if (!depsSet.has(activeEffect)) {
-    depsSet.add(activeEffect);
+  if (!depsSet.has(activeEffect!)) {
+    depsSet.add(activeEffect!);
     activeEffect!.deps.push(depsSet);
   }
 }
@@ -182,7 +192,7 @@ export function trigger(target, key) {
  * @description 触发依赖
  * @param depsSet {Set} 该属性相关的所有依赖集
  */
-export function triggerEffects(depsSet: Set<any>) {
+export function triggerEffects(depsSet: Set<ReactiveEffect>) {
   // 执行依赖
   for (const effect of depsSet) {
     if (effect.scheduler) {
