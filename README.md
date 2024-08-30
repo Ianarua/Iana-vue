@@ -1,7 +1,6 @@
 # Iana-vue
 
 已完成:
-
 * reactive(支持嵌套)
 * ref(支持嵌套)
 * track依赖收集
@@ -14,6 +13,7 @@
 * unRef
 * effect.scheduler
 * effect.stop
+<hr/>
 
 - [Monorepo组织管理构建](#一monorepo组织管理构建)
     - [package.json说明](#packagejson)
