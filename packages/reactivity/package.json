@@ -6,6 +6,15 @@
   "scripts": {
     "test": "vitest"
   },
+  "buildOptions": {
+    "name": "IanaReactivity",
+    "formats": [
+      "esm-bundler",
+      "esm-browser",
+      "cjs",
+      "global"
+    ]
+  },
   "author": "Ianarua",
   "license": "ISC",
   "dependencies": {

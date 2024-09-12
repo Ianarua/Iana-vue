@@ -1,6 +1,11 @@
 # Iana-vue
 
 已完成:
+* 手写多模块打包
+* Promise.all并行打包
+* 支持scripts传参进行打包指定package
+* 支持scripts传参进行打包指定格式
+* 支持打包前删除之前打包结果
 * reactive(支持嵌套)
 * ref(支持嵌套)
 * track依赖收集
@@ -18,7 +23,7 @@
 - [Monorepo组织管理构建](#一monorepo组织管理构建)
     - [package.json说明](#packagejson)
     - [tsconfig.json说明](#tsconfigjson)
-    - [rollup.config.ts说明](#rollupconfigts)
+    - [rollup.config.mjs说明](#rollupconfigmjs)
     - [pnpm-workspace.yaml说明](#pnpm-workspaceyaml)
 - [packages包](#二packages)
     - [reactivity](#reactivity)
@@ -43,16 +48,24 @@
     * "dev": "rollup -c -w"
         * -c: 构建时用rollup.config.ts配置文件
         * -w: 监听
-    * "build": "rollup -c"
+    * "build": "node scripts/build.mjs",
     * "test": "vitest run" 运行__test__下的所有测试文件
         * 测试文件以.test.ts或.spec.ts为后缀
+          
+    * "build:reactivity": "node scripts/build.mjs reactivity shared --formats cjs"
+        * 指定模块打包
+        * 支持参数 
+          * 直接跟包名
+          * --format(-f): esm-bundler, esm-browser, cjs, global
+          * --devOnly(-d): 没有参数
+          * sourceMap
 
 ### tsconfig.json
 
 `tsc --init`
 typescript的配置
 
-### rollup.config.ts
+### rollup.config.mjs
 
 rollup的相关配置项
 

@@ -6,6 +6,12 @@
   "scripts": {
     "test": "vitest"
   },
+  "buildOptions": {
+    "formats": [
+      "esm-bundler",
+      "cjs"
+    ]
+  },
   "author": "Ianarua",
   "license": "ISC"
 }
