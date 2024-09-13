@@ -1,0 +1,22 @@
+{
+  "name": "@iana-vue/runtime-test",
+  "version": "1.0.0",
+  "description": "@iana-vue/runtime-test",
+  "main": "index.ts",
+  "scripts": {
+    "test": "vitest"
+  },
+  "buildOptions": {
+    "name": "VueRuntimeTest",
+    "formats": [
+      "esm-bundler",
+      "cjs"
+    ]
+  },
+  "author": "Ianarua",
+  "license": "ISC",
+  "dependencies": {
+    "@iana-vue/reactivity": "workspace:^1.0.0",
+    "@iana-vue/shared": "workspace:^1.0.0"
+  }
+}

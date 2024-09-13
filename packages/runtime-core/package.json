@@ -1,0 +1,22 @@
+{
+  "name": "@iana-vue/runtime-core",
+  "version": "1.0.0",
+  "description": "@iana-vue/runtime-core",
+  "main": "index.ts",
+  "scripts": {
+    "test": "vitest"
+  },
+  "buildOptions": {
+    "name": "VueRuntimeCore",
+    "formats": [
+      "esm-bundler",
+      "cjs"
+    ]
+  },
+  "author": "Ianarua",
+  "license": "ISC",
+  "dependencies": {
+    "@iana-vue/reactivity": "workspace:^1.0.0",
+    "@iana-vue/shared": "workspace:^1.0.0"
+  }
+}

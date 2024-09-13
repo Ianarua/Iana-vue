@@ -6,6 +6,9 @@
 * 支持scripts传参进行打包指定package
 * 支持scripts传参进行打包指定格式
 * 支持打包前删除之前打包结果
+<hr />
+reactivity
+
 * reactive(支持嵌套)
 * ref(支持嵌套)
 * track依赖收集
@@ -18,7 +21,10 @@
 * unRef
 * effect.scheduler
 * effect.stop
-<hr/>
+<hr />
+* 
+
+<hr />
 
 - [Monorepo组织管理构建](#一monorepo组织管理构建)
     - [package.json说明](#packagejson)
@@ -75,6 +81,12 @@ pnpm不支持在package.json中配置的workspace字段, 需要新建名为这�
 
 ## 二、packages
 
+分包的package中buildOptions字段决定了构建的格式，优先级如下：
+1. 最外层的package中build的--format(-f)参数
+2. buildOptions
+3. build.mjs中的initFormat
+
+分包概述：
 * reactivity 响应式系统
 * share 仓库中中多个包之间共享的工具或功能模块
 

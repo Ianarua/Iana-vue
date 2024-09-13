@@ -1,6 +1,8 @@
+export * from './shapeFlags';
+
 // 是否为对象
 export const isObject = (val) => {
-  return val !== null && typeof val === "object";
+  return val !== null && typeof val === 'object';
 };
 
 // 扩展
