@@ -1,6 +1,6 @@
 // 组件类型
 export const enum ShapeFlags {
-  // 最后要渲染的 element 类型
+  // HTMLElement
   ELEMENT = 1,
   // 组件类型
   STATEFUL_COMPONENT = 1 << 2,

@@ -6,7 +6,7 @@ export const Fragment = Symbol.for('v-fgt');
 
 // VNode 虚拟节点的类型
 export interface VNode {
-  // 存储与虚拟节点对应的实际 DOM 元素的引用
+  // 虚拟节点 对应的 真实节点 的引用
   el: any;
   // 存储虚拟节点对应的组件实例
   component: any;
@@ -47,7 +47,7 @@ export const createVNode = function (
    * type 有可能是 string 也有可能是 对象
    * 对象的话，就是用户设置是 options
    * string 的话，createVNode("div")
-   * 组件对象的时候，createVNode(App)
+   * 组件对象 的时候，createVNode(App)
    */
   const vnode = {
     el: null,
@@ -61,8 +61,35 @@ export const createVNode = function (
 
   // 基于 children 再次设置 shapeFlag, 如果是数组，则设置 ARRAY_CHILDREN 标志位， 如果是字符串则为 文本
   if (Array.isArray(children)) {
+    /**
+     * 如果 vnode 初始化 shapeFlag 是 HTMLElement(string)，并且 children 是 Array
+     * 则运算流程为：
+     * 1.HTMLElement -> ELEMENT(1)
+     * 2. 1 |= (1 << 4)
+     * 3. 结果为: 17
+     */
+
+    /**
+     * 如果 vnode 初始化 shapeFlag 是 Component，并且 children 是 Array
+     * 1. 组件类型 -> STATEFUL_COMPONENT(1 << 2 = 4)
+     * 2. 4 |= (1 << 4)
+     * 3. 结果为: 20
+     */
     vnode.shapeFlag |= ShapeFlags.ARRAY_CHILDREN;
   } else if (typeof children === 'string') {
+    /**
+     * 初始化 HTMLElement(string), children 是 string
+     * 1. HTMLElement -> ELEMENT(1)
+     * 2. 1 |= (1 << 3)
+     * 3. 结果为: 9
+     */
+
+    /**
+     * 初始化 Component, children 是 string
+     * 1. 组件类型 -> STATEFUL_COMPONENT(1 << 2 = 4)
+     * 2. 4 |= (1 << 3)
+     * 3. 结果为: 12
+     */
     vnode.shapeFlag |= ShapeFlags.TEXT_CHILDREN;
   }
 
@@ -85,7 +112,7 @@ export function normalizeChildren(vnode: VNode, children: unknown) {
       // 不需要进行任何操作，跳过处理
     } else {
       // 此时 vnode 必然是组件类型，并且其 children 是 slots
-      // 设置 vnode 的 shapeFlag，表示其 children 为 slots
+      // 设置 vnode 的 shapeFlag(表示其 children 为 slots)
       vnode.shapeFlag |= ShapeFlags.SLOTS_CHILDREN;
     }
   }

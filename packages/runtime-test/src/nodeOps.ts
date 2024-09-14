@@ -47,5 +47,21 @@ function insert(child, parent) {
   child.parentNode = parent;
 }
 
+/**
+ * @description 设置元素 文本节点，并将 文本节点 添加到 el 的children数组中
+ * @param el
+ * @param text
+ */
+function setElementText(el, text) {
+  el.children = [
+    {
+      id: nodeId++,
+      type: NodeTypes.TEXT,
+      text,
+      parentNode: el,
+    },
+  ];
+}
+
 // host开头的函数
-export const nodeOps = { createElement, insert };
+export const nodeOps = { createElement, insert, setElementText };

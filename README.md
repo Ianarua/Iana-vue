@@ -1,12 +1,15 @@
 # Iana-vue
 
 已完成:
+
 * 手写多模块打包
 * Promise.all并行打包
 * 支持scripts传参进行打包指定package
 * 支持scripts传参进行打包指定格式
 * 支持打包前删除之前打包结果
+
 <hr />
+
 reactivity
 
 * reactive(支持嵌套)
@@ -21,8 +24,13 @@ reactivity
 * unRef
 * effect.scheduler
 * effect.stop
+
 <hr />
-* 
+
+runtime-core
+
+* h函数
+* render函数渲染HTMLElement
 
 <hr />
 
@@ -40,10 +48,11 @@ reactivity
         - [5. trigger依赖触发](#5-trigger依赖触发)
     - [ref](#ref)
         - [1. ref的整个流程](#1-ref的整个流程)
+    - [runtime-core](#runtimecore)
 
-## 一、Monorepo组织管理构建
+# 一、Monorepo组织管理构建
 
-### package.json
+## package.json
 
 `pnpm init`
 
@@ -57,40 +66,44 @@ reactivity
     * "build": "node scripts/build.mjs",
     * "test": "vitest run" 运行__test__下的所有测试文件
         * 测试文件以.test.ts或.spec.ts为后缀
-          
+
     * "build:reactivity": "node scripts/build.mjs reactivity shared --formats cjs"
         * 指定模块打包
-        * 支持参数 
-          * 直接跟包名
-          * --format(-f): esm-bundler, esm-browser, cjs, global
-          * --devOnly(-d): 没有参数
-          * sourceMap
+        * 支持参数
+            * 直接跟包名
+            * --format(-f): esm-bundler, esm-browser, cjs, global
+            * --devOnly(-d): 没有参数
+            * sourceMap
 
-### tsconfig.json
+## tsconfig.json
 
 `tsc --init`
 typescript的配置
 
-### rollup.config.mjs
+## rollup.config.mjs
 
 rollup的相关配置项
 
-### pnpm-workspace.yaml
+## pnpm-workspace.yaml
 
 pnpm不支持在package.json中配置的workspace字段, 需要新建名为这个的文件进行配置
 
-## 二、packages
+# 二、packages
 
 分包的package中buildOptions字段决定了构建的格式，优先级如下：
+
 1. 最外层的package中build的--format(-f)参数
 2. buildOptions
 3. build.mjs中的initFormat
 
 分包概述：
+
 * reactivity 响应式系统
 * share 仓库中中多个包之间共享的工具或功能模块
 
-### reactivity
+## reactivity 包
+
+### reactive
 
 #### 1. reactive的响应式系统整个流程
 
@@ -215,3 +228,77 @@ target  depsMap -> 当前target(源对象)的key对应的map
 4. 收集完后返回 `this._value` 即响应式数据
 5. 修改时, 会再次触发 `getter`, 和reactive相同, 触发的时候会跳过一系列判断(因为已经收集过)
 6. 之后**触发`setter`**, 触发`trigger`， 后续步骤和 reactive 相同
+
+## runtime-core 包
+
+### h 流程（createVNode）
+
+```markdown
+/**
+
+* @description 该创建虚拟节点的工厂函数
+* @param {VNodeTypes} type 节点类型，可能是string(如"div")，不是string即为组件对象
+* @param props 元素的属性对象，包含了一些属性名-属性值的键值对。默认为 null
+* @param children 元素的子元素或者文本内容。可以是一个字符串或者一个包含多个子元素的数组。默认为空数组
+* @return {VNode} vnode虚拟节点
+  */
+```
+
+1. h 函数内部返回一个 `createVNode函数`，该函数的创建虚拟节点的主要函数
+2. 初始化一个vnode
+3. 初始化vnode时，根据 type 判断 shapeFlag，并设置到 vnode 上
+    * 判断这个 vnode 是`HTMLElement`还是一个`组件`
+4. 再根据 children 通过位运算来重新设置 shapeFlag
+    * 供之后的 `normalizeChildren` 函数判断
+5. `normalizeChildren`函数做 对 shapeFlag的进一步处理
+    * 处理 children 是否为 `component`
+6. 最后返回处理完的`vnode`
+
+### render 流程
+
+* render 分为 mount 和 update 两部分
+* 主要是在 path 中做判断
+
+#### render 的 初始化挂载(mount)流程
+
+这里只说 mount 流程, update 时需要做diff算法，update 流程
+
+1. 向render注入`patchProp`和`nodeOps`
+    * nodeOps有：createElement, insert
+    * patchProp 更新元素属性
+2. 开始`path`函数
+
+#### path流程
+
+mount 和 update 都会调用path，区别的 mount 时候 n1 = null
+
+1. 先判断 n2(新节点) 的类型，分四种(后两种根据shapeFlag判断)：
+
+* 文本节点,调用`processText`
+* Fragment, 调用`processFragment`
+* HTMLElement, 调用`processElement`
+* 组件, 调用`processComponent`
+
+> 从这步开始，mount 和 update就开始有区别了，这里先说mount流程
+
+##### 文本节点`processText`方法
+
+##### Fragment节点`processFragment`方法
+
+##### HTMLElement节点`processElement`方法
+
+1. 检测到`n1 === null`，调用`mountElement`
+2. 调用`hostCreateElement`(即`createElement`)，根据 vnode.type 创建一个 element(不是vnode) , 并把这个 element
+   的引用给 vnode.el
+3. 判断 vnode.children 节点
+    * 文本，即`shapeFlag & ShapeFlags.TEXT_CHILDREN`有值，调用`hostSetElementText`
+        * `hostSetElementText`(即`setElementText`): 调用`el.children = text节点;`
+    * 数组，即`shapeFlag & ShapeFlags.ARRAY_CHILDREN`有值，调用`mountChildren`
+        * `mountChildren`: 内部遍历children，递归调用`patch`
+4. 处理props
+    * 循环遍历 `node.props`, 调用`hostPathProp(el, key, null, nextVal);`
+    * `hostPathProp`: 调用`patchProp: el.props[key] = nextValue;`,
+5. 触发`beforeMount()`钩子
+6. 处理完成，调用`hostInsert`函数（即`insert`函数），插入到 `container`内
+    * 将子元素添加到父元素的子元素列表中: `parent.children.push(child);`
+    * 设置子元素的父节点属性为当前父元素: `child.parentNode = parent;`

@@ -12,7 +12,7 @@ export function createRenderer(options) {
     createElement: hostCreateElement,
     setElementText: hostSetElementText,
     // 对比元素新老属性
-    pathProp: hostPathProp,
+    patchProp: hostPathProp,
     // 插入 element
     insert: hostInsert,
     // 删除 element
@@ -59,7 +59,7 @@ export function createRenderer(options) {
         processFragment(n1, n2, container);
         break;
       default:
-        // 是 html 元素 或者 组件 ，基于 shapeFlag 处理
+        // 是 HTMLElement 或者 组件 ，基于 shapeFlag 处理
         if (shapeFlag & ShapeFlags.ELEMENT) {
           console.log('处理 element');
           processElement(n1, n2, container, anchor, parentComponent);
@@ -137,7 +137,8 @@ export function createRenderer(options) {
     if (shapeFlag & ShapeFlags.TEXT_CHILDREN) {
       /**
        * @description 处理 Text 类型的节点
-       * @example render () {
+       * @example
+       * render () {
        *   return h('div', {}, 'hello world')
        * }
        * 这里的 children 就是 text, 直接渲染
@@ -147,7 +148,8 @@ export function createRenderer(options) {
     } else if (shapeFlag & ShapeFlags.ARRAY_CHILDREN) {
       /**
        * @description 处理 Array 类型的节点, 递归处理
-       * @example render () {
+       * @example
+       * render () {
        *   return h('div', {}, [h('p'), h(Component)])
        * }
        */
@@ -156,7 +158,7 @@ export function createRenderer(options) {
     }
 
     /**
-     * @description 处理 vnode 的 children，遍历每个 child 并调用 path e
+     * @description Array类型的节点，处理 vnode 的 children，遍历每个 child 并调用 path e
      * @param children
      * @param container
      */
@@ -170,8 +172,7 @@ export function createRenderer(options) {
     // 处理 props
     if (props) {
       for (const key in props) {
-        // 过滤掉 vue 自身用的key
-        // 比如生命周期相关的 key: beforeMount、onMounted
+        // 过滤掉 vue 自身用的key: 如 onClick
         const nextVal = props[key];
         hostPathProp(el, key, null, nextVal);
       }
