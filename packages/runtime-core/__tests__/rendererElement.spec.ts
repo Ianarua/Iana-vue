@@ -1,7 +1,7 @@
 import { h } from '@iana-vue/runtime-core';
 import { nodeOps, render, serializeInner } from '@iana-vue/runtime-test';
 
-describe('renderer element', () => {
+describe('renderer HTMLElement', () => {
   let root;
 
   beforeEach(() => {
@@ -19,7 +19,11 @@ describe('renderer element', () => {
   });
 
   it('render 一个带 children(文本节点) 的 HTMLElement', () => {
-    render(h('div', { class: 'foo', 'vFor': 'bar' }, 'hello'), root);
-    expect(serializeInner(root)).toBe('<div class="foo" vFor="bar">hello</div>');
+    render(h('div', { class: 'foo', 'data': 'bar' }, 'hello'), root);
+    expect(serializeInner(root)).toBe('<div class="foo" data="bar">hello</div>');
   });
+
+  it ('update HTMLElement', () => {
+
+  })
 });

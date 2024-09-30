@@ -272,6 +272,8 @@ target  depsMap -> 当前target(源对象)的key对应的map
 
 mount 和 update 都会调用path，区别的 mount 时候 n1 = null
 
+**n1 和 n2 都是 vnode, 即 h 函数创建的虚拟节点**
+
 1. 先判断 n2(新节点) 的类型，分四种(后两种根据shapeFlag判断)：
 
 * 文本节点,调用`processText`

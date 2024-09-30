@@ -20,6 +20,9 @@ export interface TestElement {
  * @return node 对象，内部包含该节点的属性
  */
 function createElement(tag: string): TestElement {
+  // 如果是基于 dom 的话 那么这里会返回 dom 元素
+  // 这里是为了测试 所以只需要反正一个对象就可以了
+  // 后面的话 通过这个对象来做测试
   return {
     tag,
     id: nodeId++,

@@ -27,10 +27,10 @@ export function createRenderer(options) {
    * @param {VNode} vnode 虚拟节点
    * @param container 父容器（真实节点）
    */
-  const render = <T extends null = any>(vnode: VNode, container: T) => {
+  const render = <T = any>(vnode: VNode, container: T) => {
     console.log('调用 patch');
     // 第一次渲染，没有旧节点
-    patch(null, vnode, container);
+    patch(null, vnode, container as any);
   };
 
   /**
@@ -65,7 +65,7 @@ export function createRenderer(options) {
           processElement(n1, n2, container, anchor, parentComponent);
         } else if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
           console.log('处理 component');
-          // processComponent(n1, n2, container, parentComponent);
+          processComponent(n1, n2, container, parentComponent);
         }
     }
   };
@@ -102,6 +102,7 @@ export function createRenderer(options) {
     }
   };
 
+  // 从这开始是 Element 相关逻辑
   /**
    * @description 处理 element 类型的节点，相当于一个 中间处理函数 ，决定这个节点是 挂载（第一次） 还是更新
    * @param {VNode | null} n1  旧节点, 可能为空（第一次渲染该节点）
@@ -157,18 +158,6 @@ export function createRenderer(options) {
       mountChildren(vnode.children, el);
     }
 
-    /**
-     * @description Array类型的节点，处理 vnode 的 children，遍历每个 child 并调用 path e
-     * @param children
-     * @param container
-     */
-    function mountChildren(children, container) {
-      children.forEach(vnodeChild => {
-        console.log('初始化 children:', vnodeChild);
-        patch(null, vnodeChild, container);
-      });
-    }
-
     // 处理 props
     if (props) {
       for (const key in props) {
@@ -185,6 +174,11 @@ export function createRenderer(options) {
 
     // 处理完成，插入到 container 内
     hostInsert(el, container, anchor);
+
+    // TODO 触发 mounted() 钩子
+    console.log('vnodeHook  -> onVnodeMounted');
+    console.log('DirectiveHook  -> mounted');
+    console.log('transition  -> enter');
   };
 
   const updateElement = (n1: VNode, n2: VNode, container: any, anchor, parentComponent) => {
@@ -204,6 +198,43 @@ export function createRenderer(options) {
     // // 对比 children
     // patchChildren(n1, n2, el, anchor, parentComponent);
   };
+
+  /**
+   * @description Array类型的节点，处理 vnode 的 children，遍历每个 child 并调用 path e
+   * @param children
+   * @param container
+   */
+  function mountChildren(children, container) {
+    children.forEach(vnodeChild => {
+      console.log('初始化 children:', vnodeChild);
+      patch(null, vnodeChild, container);
+    });
+  }
+
+  // 从这开始是 Component 逻辑
+  function processComponent(n1, n2, container, parentComponent) {
+    // 如果 n1 没有值的话，那么就是 mount
+    if (!n1) {
+      // 初始化 component
+      mountComponent(n2, container, parentComponent);
+    } else {
+      updateComponent(n1, n2, container);
+    }
+  }
+
+  // Component 初始化
+  function mountComponent(initialVNode, container, parentComponent) {
+    // 1. 先创建一个 component instance
+    const instance = (
+      initialVNode.component = createComponentInstance(initialVNode, parentComponent)
+    );
+    console.log(`创建组件实例:${ instance.type.name }`);
+    // 2. 对 instance 加工
+    setupComponent(instance);
+
+    setupRenderEffect(instance, initialVNode, container);
+  }
+
 
   return {
     render,
